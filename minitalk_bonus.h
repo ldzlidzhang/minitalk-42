@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minitalk_bonus.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lidanzhang <lidanzhang@student.42.fr>      +#+  +:+       +#+        */
+/*   By: lidzhang <lidzhang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 11:53:45 by lidanzhang        #+#    #+#             */
-/*   Updated: 2023/01/12 10:43:18 by lidanzhang       ###   ########.fr       */
+/*   Updated: 2023/01/19 09:40:23 by lidzhang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

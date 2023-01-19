@@ -3,62 +3,79 @@
 /*                                                        :::      ::::::::   */
 /*   minitalk.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lidanzhang <lidanzhang@student.42.fr>      +#+  +:+       +#+        */
+/*   By: lidzhang <lidzhang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 15:27:50 by lidanzhang        #+#    #+#             */
-/*   Updated: 2023/01/12 20:36:26 by lidanzhang       ###   ########.fr       */
+/*   Updated: 2023/01/19 09:40:24 by lidzhang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	ft_putstr(char *str)
+void	configure_sigaction_signals(struct sigaction *sa)
 {
-	while (*str)
-		write(1, str++, 1);
-}
-
-void	ft_putchar(char c)
-{
-	write(1, &c, 1);
-}
-
-void	ft_putnbr(int n)
-{
-	if (n > 9)
-		ft_putnbr(n / 10);
-	write(1, &"0123456789"[n % 10], 1);
-}
-
-int	ft_atoi(const char *str)
-{
-	int			res;
-	int			sign;
-
-	sign = 1;
-	res = 0;
-	while (*str >= 7 && *str <= 14)
-		str++;
-	if (*str == '-')
-		sign = -1;
-	if (*str == '-' || *str == '+')
-		str++;
-	while (*str >= '0' && *str <= '9')
+	if (sigaction(SIGUSR1, sa, NULL) < 0)
 	{
-		res = res * 10 + (*str - 48);
-		str++;
+		ft_putstr_fd("\e[31m## error - could not setup SIGUSR1 ##\n\e[0m",
+			1);
+		exit(EXIT_FAILURE);
 	}
-	return (res * sign);
+	if (sigaction(SIGUSR2, sa, NULL) < 0)
+	{
+		ft_putstr_fd("\e[31m## error - could not setup SIGUSR2 ##\n\e[0m",
+			1);
+		exit(EXIT_FAILURE);
+	}
 }
 
-size_t	ft_strlen(const char *str)
+void	send_int(pid_t pid, int num)
 {
-	int	i;
+	int		shift;
+	char	bit;
 
-	if (!str)
-		return (0);
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
+	shift = (sizeof(int) * 8) - 1;
+	while (shift >= 0)
+	{
+		bit = (num >> shift) & 1;
+		send_bit(pid, bit, 1);
+		shift--;
+	}
+}
+
+void	send_char(pid_t pid, char c)
+{
+	int		shift;
+	char	bit;
+
+	shift = (sizeof(char) * 8) - 1;
+	while (shift >= 0)
+	{
+		bit = (c >> shift) & 1;
+		send_bit(pid, bit, 1);
+		shift--;
+	}
+}
+
+void	send_bit(pid_t pid, char bit, char flag_to_pause)
+{
+	if (bit == 0)
+	{
+		if (kill(pid, SIGUSR1) < 0)
+		{
+			ft_putstr_fd("\e[31m## error - sending SIGUSR1 ##\n\e[0m",
+				1);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else if (bit == 1)
+	{
+		if (kill(pid, SIGUSR2) < 0)
+		{
+			ft_putstr_fd("\e[31m## error - sending SIGUSR2 ##\n\e[0m",
+				1);
+			exit(EXIT_FAILURE);
+		}
+	}
+	if (flag_to_pause != 0)
+		pause();
 }

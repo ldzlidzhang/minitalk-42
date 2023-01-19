@@ -3,86 +3,67 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lidanzhang <lidanzhang@student.42.fr>      +#+  +:+       +#+        */
+/*   By: lidzhang <lidzhang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 15:55:07 by lidanzhang        #+#    #+#             */
-/*   Updated: 2023/01/12 20:35:08 by lidanzhang       ###   ########.fr       */
+/*   Updated: 2023/01/19 10:06:33 by lidzhang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static void	ft_infos(int sig, siginfo_t *siginfo, void *context)
+static void	c_handler(int sig)
 {
-	(void)siginfo;
-	(void)context;
 	if (sig == SIGUSR2)
-		return ;
-	ft_putstr("Sent successfuly!\n");
-	exit(EXIT_FAILURE);
+		exit(EXIT_SUCCESS);
 }
 
-static void	ft_last_bit(int pid)
+static void	c_send_message(int server_pid, char *str)
 {
 	int	i;
 
-	i = 8;
-	while (i--)
+	i = 0;
 	{
-		if (kill(pid, SIGUSR2) == -1)
-			ft_putstr("\nError : Kill failed\n");
-		usleep(10);
+		ft_putstr_fd("\n\e[92m > sending length = [", 1);
+		ft_putnbr_fd(ft_strlen(str), 1);
+		ft_putstr_fd("]\n\e[0m", 1);
+		send_int(server_pid, ft_strlen(str));
+		ft_putstr_fd("\e[92m > sending message\n\e[0m", 1);
+		while (str[i] != '\0')
+			send_char(server_pid, str[i++]);
+		ft_putstr_fd("\e[92m > sending null string terminator\n\e[0m", 1);
+		send_char(server_pid, '\0');
 	}
-}
-
-static void	ft_error(void)
-{
-	ft_putstr("\nError : Invalid PID\n");
-	exit(EXIT_FAILURE);
-}
-
-static void	send_to_server(int pid, char *str)
-{
-	int		i;
-	char	c;
-
-	while (*str)
-	{
-		i = 8;
-		c = *str++;
-		while (i--)
-		{
-			if (c >> i & 1)
-			{
-				if (kill(pid, SIGUSR1) == -1)
-					ft_error();
-			}
-			else
-				if (kill(pid, SIGUSR2) == -1)
-					ft_error();
-			usleep(50);
-		}
-	}
-	ft_last_bit(pid);
 }
 
 int	main(int argc, char **argv)
-{
-	struct sigaction	sa;
+{	
+	struct sigaction	s_client;
 
-	if (argc != 3 || !ft_strlen(argv[2]))
+	if (argc != 3)
 	{
-		ft_putstr("Arguments :  ./client [pid] [string]\n");
-		exit(0);
+		ft_putstr_fd("\e[31m## error - incorrect syntax ##\n\e[0m", 1);
+		ft_putstr_fd(
+			"\e[92m./client <the server PID> <the string to send>\n\e[0m",
+			1);
+		return (EXIT_FAILURE);
 	}
-	sa.sa_sigaction = ft_infos;
-	sa.sa_flags = SA_SIGINFO;
-	if (sigaction(SIGUSR1, &sa, 0) == -1)
-		exit(EXIT_FAILURE);
-	if (sigaction(SIGUSR2, &sa, 0) == -1)
-		exit(EXIT_FAILURE);
-	send_to_server(ft_atoi(argv[1]), argv[2]);
-	while (1)
-		pause();
+	else if (kill(ft_atoi(argv[1]), 0) < 0)
+	{
+		ft_putstr_fd("\e[31m## error - PID is invalid ##\n\e[0m", 1);
+		return (EXIT_FAILURE);
+	}
+	sigemptyset(&s_client.sa_mask);
+	s_client.sa_flags = SA_RESTART;
+	s_client.sa_handler = c_handler;
+	configure_sigaction_signals(&s_client);
+	ft_putstr_fd("client [PID = ", 1);
+	ft_putnbr_fd(getpid(), 1);
+	ft_putstr_fd("]", 1);
+	c_send_message(ft_atoi(argv[1]), argv[2]);
 	return (EXIT_SUCCESS);
 }
+
+// red: \e[31m##
+// green: \e[92m
+// yellow: \e[33m 

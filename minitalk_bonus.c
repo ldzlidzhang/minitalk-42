@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minitalk_bonus.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lidanzhang <lidanzhang@student.42.fr>      +#+  +:+       +#+        */
+/*   By: lidzhang <lidzhang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:36:48 by lidanzhang        #+#    #+#             */
-/*   Updated: 2023/01/12 15:02:55 by lidanzhang       ###   ########.fr       */
+/*   Updated: 2023/01/19 09:49:12 by lidzhang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ void	configure_sigaction_signals(struct sigaction *sa)
 	if (sigaction(SIGUSR1, sa, NULL) < 0)
 	{
 		ft_putstr_fd("\e[31m## error - could not setup SIGUSR1 ##\n\e[0m",
-			STDOUT_FILENO);
+			1);
 		exit(EXIT_FAILURE);
 	}
 	if (sigaction(SIGUSR2, sa, NULL) < 0)
 	{
 		ft_putstr_fd("\e[31m## error - could not setup SIGUSR2 ##\n\e[0m",
-			STDOUT_FILENO);
+			1);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -63,7 +63,7 @@ void	send_bit(pid_t pid, char bit, char flag_to_pause)
 		if (kill(pid, SIGUSR1) < 0)
 		{
 			ft_putstr_fd("\e[31m## error - sending SIGUSR1 ##\n\e[0m",
-				STDOUT_FILENO);
+				1);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -72,7 +72,7 @@ void	send_bit(pid_t pid, char bit, char flag_to_pause)
 		if (kill(pid, SIGUSR2) < 0)
 		{
 			ft_putstr_fd("\e[31m## error - sending SIGUSR2 ##\n\e[0m",
-				STDOUT_FILENO);
+				1);
 			exit(EXIT_FAILURE);
 		}
 	}

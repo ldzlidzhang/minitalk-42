@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: lidanzhang <lidanzhang@student.42.fr>      +#+  +:+       +#+         #
+#    By: lidzhang <lidzhang@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/03 12:28:45 by lidanzhang        #+#    #+#              #
-#    Updated: 2023/01/12 15:13:25 by lidanzhang       ###   ########.fr        #
+#    Updated: 2023/01/19 09:56:00 by lidzhang         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
